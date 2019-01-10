@@ -15,8 +15,7 @@ services:
   - mongodb
 
 env:
-  - MYSQL_PASS: ''
-  - POSTGRES_USER: postgres
+  - MYSQL_PASS= POSTGRES_USER=postgres
 
 before_install:
   - mysql -e 'CREATE DATABASE `strapi-test`;'
