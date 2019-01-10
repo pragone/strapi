@@ -2,7 +2,7 @@ const spawn = require('child_process').spawn;
 const fs = require('fs');
 const path = require('path');
 const shell = require('shelljs');
-const cypress = require('cypress')
+const cypress = require('cypress');
 const { deleteApp } = require('./helpers/deleteFolder');
 
 const strapiBin = path.resolve('./packages/strapi/bin/strapi.js');
@@ -11,9 +11,9 @@ let testExitCode = 0;
 let appStart;
 
 const databases = {
-  mongo: `--dbclient=mongo --dbhost=127.0.0.1 --dbport=27017 --dbname=strapi-test-${new Date().getTime()} --dbusername= --dbpassword=`,
-  postgres: '--dbclient=postgres --dbhost=127.0.0.1 --dbport=5432 --dbname=strapi-test --dbusername= --dbpassword=',
-  mysql: '--dbclient=mysql --dbhost=127.0.0.1 --dbport=3306 --dbname=strapi-test --dbusername=root --dbpassword=root'
+  mongo: `--dbclient=mongo --dbhost=${ process.env.MONGO_HOST || '127.0.0.1'} --dbport=${ process.env.MONGO_PORT || '27017'} --dbname=${ process.env.MONGO_DB || `strapi-test-${new Date().getTime()}`} --dbusername=${ process.env.MONGO_USER || ''} --dbpassword=${ process.env.MONGO_PASS || ''}`,
+  postgres: `--dbclient=postgres --dbhost=${ process.env.POSTGRES_HOST || '127.0.0.1'} --dbport=${ process.env.POSTGRES_PORT || '5432'} --dbname=${ process.env.POSTGRES_DB || 'strapi-test'} --dbusername=${ process.env.POSTGRES_USER || ''} --dbpassword=${ process.env.POSTGRES_PASS || ''}`,
+  mysql: `--dbclient=mysql --dbhost=${ process.env.MYSQL_HOST || '127.0.0.1'} --dbport=${ process.env.MYSQL_PORT || '3306'} --dbname=${ process.env.MYSQL_DB || 'strapi-test'} --dbusername=${ process.env.MYSQL_USER || 'root'} --dbpassword=${ process.env.MYSQL_PASS || 'root'}`
 };
 
 const {runCLI: jest} = require('jest-cli/build/cli');
@@ -55,7 +55,7 @@ const main = async () => {
     return new Promise((resolve, reject) => {
       try {
         shell.cd('./testApp');
-        appStart = shell.exec(`strapi start`, { async: true, silent: true });
+        appStart = shell.exec('strapi start', { async: true, silent: true });
         appStart.stdout.on('data', (data) => {
           if (data.includes('To shut down your server')) {
             shell.cd('..');
@@ -66,7 +66,7 @@ const main = async () => {
         });
 
       } catch (e) {
-        console.log(e)
+        console.log(e);
         if (typeof appStart !== 'undefined') {
           process.kill(appStart.pid);
         }
@@ -106,15 +106,15 @@ const main = async () => {
     
     return cypress
       .run(config);
-  }
+  };
 
   const testProcess = async (database) => {
     try {
       await clean();
       await generate(database);
       await start();
+      await test();
       await cypressTest();
-      // await test();
       process.kill(appStart.pid);
     } catch (e) {
       console.error(e.message);
