@@ -16,10 +16,11 @@ services:
 
 env:
   - MYSQL_PASS: ''
+  - POSTGRES_USER: postgres
 
 before_install:
   - mysql -e 'CREATE DATABASE `strapi-test`;'
-  - psql -c 'create database strapi-test;' -U postgres
+  - psql -c 'create database "strapi-test";' -U postgres
   - export CHROME_BIN=chromium-browser
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
