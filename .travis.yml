@@ -32,7 +32,7 @@ install:
 
 before_script:
   - git fetch origin master:master
-  - mysql -e 'CREATE DATABASE strapi-test;'
+  - mysql -e 'CREATE DATABASE `strapi-test`;'
   - psql -c 'create database strapi-test;' -U postgres
 
 script:
